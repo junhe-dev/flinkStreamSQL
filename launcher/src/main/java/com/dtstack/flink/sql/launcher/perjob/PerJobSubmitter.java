@@ -51,7 +51,7 @@ public class PerJobSubmitter {
 
     public static String submit(LauncherOptions launcherOptions, JobGraph jobGraph) throws Exception {
 
-		fillJobGraphClassPath(jobGraph);
+		fillJobGraphClassPath(jobGraph, launcherOptions.getRemoteSqlPluginPath());
 
 		if (launcherOptions.getAddjar() != null) {
 			String addjarPath = URLDecoder.decode(launcherOptions.getAddjar(), Charsets.UTF_8.toString());
@@ -95,7 +95,7 @@ public class PerJobSubmitter {
 		return paths;
 	}
 
-	private static void fillJobGraphClassPath(JobGraph jobGraph) throws MalformedURLException {
+	private static void fillJobGraphClassPath(JobGraph jobGraph, String remotePluginPath) throws MalformedURLException {
 		Map<String, String> jobCacheFileConfig = jobGraph.getJobConfiguration().toMap();
 		Set<String> classPathKeySet = Sets.newHashSet();
 
@@ -120,7 +120,11 @@ public class PerJobSubmitter {
 
 		for(String key : classPathKeySet){
 			String pathStr = jobCacheFileConfig.get(key);
-			jobGraph.getClasspaths().add(new URL("file:" + pathStr));
+			if (!StringUtils.isBlank(remotePluginPath)) {
+				jobGraph.getClasspaths().add(new URL(remotePluginPath + pathStr));
+			} else {
+				jobGraph.getClasspaths().add(new URL("file:" + pathStr));
+			}
 		}
 	}
 }
