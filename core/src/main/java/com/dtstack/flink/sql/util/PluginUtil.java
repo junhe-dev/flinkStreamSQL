@@ -53,6 +53,15 @@ public class PluginUtil {
 
     private static ObjectMapper objectMapper = new ObjectMapper();
 
+    public enum UrlTypeEnum {
+        FILE("file:"), HTTP("http:"), HDFS("hdfs:");
+
+        private String prefix;
+
+        UrlTypeEnum(String prefix) {
+            this.prefix = prefix;
+        }
+    }
 
     public static String getJarFileDirPath(String type, String sqlRootDir){
         String jarPath = sqlRootDir + SP + type;
@@ -110,15 +119,24 @@ public class PluginUtil {
     public static URL getRemoteJarFilePath(String pluginType, String tableType, String remoteSqlRootDir) throws Exception {
         String dirName = pluginType + tableType.toLowerCase();
         String prefix = String.format("%s-%s", pluginType, tableType.toLowerCase());
-        String jarPath = remoteSqlRootDir + SP + dirName;
-        String jarName = getCoreJarFileName(jarPath, prefix);
-        return new URL("file:" + remoteSqlRootDir + SP + dirName + SP + jarName);
+
+        return getUrlByType(remoteSqlRootDir, dirName, prefix);
     }
 
     public static URL getRemoteSideJarFilePath(String pluginType, String sideOperator, String tableType, String remoteSqlRootDir) throws Exception {
         String dirName = pluginType + sideOperator + tableType.toLowerCase();
         String prefix = String.format("%s-%s-%s", pluginType, sideOperator, tableType.toLowerCase());
+
+        return getUrlByType(remoteSqlRootDir, dirName, prefix);
+    }
+
+    private static URL getUrlByType(String remoteSqlRootDir, String dirName, String prefix) throws Exception {
         String jarPath = remoteSqlRootDir + SP + dirName;
+        UrlTypeEnum urlTypeEnum = getUrlType(remoteSqlRootDir);
+        if (UrlTypeEnum.HTTP.equals(urlTypeEnum)) {
+            return new URL(remoteSqlRootDir + SP + dirName + SP + prefix + ".jar");
+        }
+
         String jarName = getCoreJarFileName(jarPath, prefix);
         return new URL("file:" + remoteSqlRootDir + SP + dirName + SP + jarName);
     }
@@ -167,4 +185,13 @@ public class PluginUtil {
         return coreJarFileName;
     }
 
+    private static UrlTypeEnum getUrlType(String path) {
+        if (path.startsWith("http://")) {
+            return UrlTypeEnum.HTTP;
+        } else if (path.startsWith("hdfs://")) {
+            return UrlTypeEnum.HDFS;
+        }
+
+        return UrlTypeEnum.FILE;
+    }
 }

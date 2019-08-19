@@ -1,0 +1,30 @@
+CREATE TABLE testAInput(
+    uuid_did VARCHAR,
+    mcm VARCHAR,
+    event_type int
+ )WITH(
+    type ='kafka11',
+    groupId='test.stream.sql',
+    bootstrapServers='10.200.3.62:9092',
+    offsetReset='latest',
+    topic='metis.report.log.item.action',
+    parallelism ='10',
+    timezone='Asia/Shanghai',
+    sourcedatatype ='json'
+ );
+
+ create table streamTable(
+    uuid_did VARCHAR,
+    mcm VARCHAR
+ )WITH(
+    type ='kafka11',
+    groupId='test.stream.sql',
+    bootstrapServers='10.200.3.62:9092',
+    topic='metis.report.log.item.action.stream',
+    parallelism ='10',
+    timezone='Asia/Shanghai',
+    sourcedatatype ='json'
+ );
+
+insert into streamTable
+select uuid_did,mcm from testAInput;

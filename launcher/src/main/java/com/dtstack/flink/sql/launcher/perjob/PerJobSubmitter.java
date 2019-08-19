@@ -53,13 +53,15 @@ public class PerJobSubmitter {
 
 		fillJobGraphClassPath(jobGraph);
 
-		String addjarPath = URLDecoder.decode(launcherOptions.getAddjar(), Charsets.UTF_8.toString());
-		if (StringUtils.isNotBlank(addjarPath) ){
-			List<String>  paths = getJarPaths(addjarPath);
-			paths.forEach( path ->{
-				jobGraph.addJar(new Path("file://" + path));
-			});
+		if (launcherOptions.getAddjar() != null) {
+			String addjarPath = URLDecoder.decode(launcherOptions.getAddjar(), Charsets.UTF_8.toString());
+			if (StringUtils.isNotBlank(addjarPath) ){
+				List<String>  paths = getJarPaths(addjarPath);
+				paths.forEach( path ->{
+					jobGraph.addJar(new Path("file://" + path));
+				});
 
+			}
 		}
 
 		String confProp = launcherOptions.getConfProp();

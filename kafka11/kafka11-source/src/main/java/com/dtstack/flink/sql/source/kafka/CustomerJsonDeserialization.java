@@ -62,7 +62,7 @@ public class CustomerJsonDeserialization extends AbsDeserialization<Row> {
 
     private static final Logger LOG = LoggerFactory.getLogger(CustomerJsonDeserialization.class);
 
-    private static final long serialVersionUID = 2385115520960444192L;
+    private static final long serialVersionUID = 3285115520960444123L;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 

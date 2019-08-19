@@ -69,6 +69,9 @@ public class HbaseOutputFormat extends MetricOutputFormat {
         LOG.warn("---configure---");
         conf = HBaseConfiguration.create();
         conf.set("hbase.zookeeper.quorum", host);
+        conf.set("hbase.rpc.timeout", "5000");
+        conf.set("hbase.client.retries.number", "3");
+        conf.set("hbase.client.operation.timeout", "5000");
         if(zkParent != null && !"".equals(zkParent)){
             conf.set("zookeeper.znode.parent", zkParent);
         }
